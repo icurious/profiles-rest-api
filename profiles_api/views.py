@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from profiles_api import serializers
-
+from rest_framework import viewsets
 # Create your views here.
 
 
@@ -38,3 +38,40 @@ class HelloApiView(APIView):
 
     def delete(self,request,pk=None):
         return Response({'message': 'DELETE'})
+
+
+class HelloViewSets(viewsets.ViewSet):
+
+    serializer_class = serializers.HelloSerializers
+
+    def list(self,request):
+        a_list = [
+            'This is viewset',
+            'This is list'
+        ]
+
+        return Response({'message': 'hello', 'list': a_list})
+    
+    def create(self,request):
+        serializer = self.serializer_class(data=request.data)
+
+        if not serializer.is_valid():
+            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        
+        name = serializer.validated_data.get('name')
+
+        message = 'Hello {}'.format(name)
+
+        return Response({'message': message})
+    
+    def retrieve(self,request,pk=None):
+        return Response({'http': 'GET'})
+
+    def update(self,request,pk=None):
+        return Response({'http': 'PUT'})
+
+    def partial_update(self,request,pk=None):
+        return Response({'http': 'PATCH'})
+
+    def delete(self,request,pk=None):
+        return Response({'http': 'DELETE'})
